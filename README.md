@@ -1,2 +1,87 @@
 # WPF
-WPFとPrismに関して
+WPFとPrism、Behaviorsに関して
+
+* WPF: Windows Presentation Foundation Microsoftが提供するWindowsアプリ用フレームワーク
+* Prism：WPFを実装するために便利なフレームワーク
+* Behaviors：クリック以外の各種イベントに対して処理を実装するフレームワーク
+
+## WPFのお約束
+
+* デザイナ専用のデータモデル指定ができる
+```
+  xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+  mc:Ignorable="d"
+
+  d:DataContext="{d:DesignInstance local:MainViewModel, IsDesignTimeCreatable=True}">
+```
+
+## 組み込みViewについて
+
+### レイアウト用
+
+* Grid：子viewを格子配置
+* StackPanel：子viewを上から重ねていく配置
+* DockPanel：子viewを上下左右に配置
+  * DockPanel.Dockで上下左右を指定積み重ねること可能
+  ```
+            <... DockPanel.Dock="Bottom">
+  ```
+
+### 基本部品
+
+* TextBlock：テキスト表示用
+* ListBox；リスト表示
+  * ItemsSource：リスト内容
+  * ListBox.ItemContainerStyle：全体のデザイン
+  * ListBox.ItemTemplate：各項目のデザイン
+    * DataTemplate：項目の内容部viewのテンプレート
+* Border：横線
+* RadioButton:複数のRadioButtonから1つを選択する
+  * GroupName：RadioButtonをまとめる（この１グループから1つが選ばれる）
+
+
+  
+## Prismのお約束
+* Projectのフォルダ階層をView,ViewModelの識別に利用する
+  * prism:ViewModelLocator.AutoWireViewModel="True"で自動化 
+```
+<Window.DataContext>
+    <vm:MainPageViewModel/>
+</Window.DataContext>
+```
+の省略
+
+## Behaviorsのお約束
+
+> [参照](https://zenn.dev/takuty/articles/e9d8f065452266)
+
+* ロード後に Command を実行する
+```
+<i:Interaction.Triggers>
+    <i:EventTrigger EventName="Loaded">
+        <i:InvokeCommandAction Command="{Binding LoadedCommand}" />
+    </i:EventTrigger>
+</i:Interaction.Triggers>
+```
+
+* ComboBox の選択を変更すると選択した値が表示される
+```
+<ComboBox
+    HorizontalAlignment="Left"
+    VerticalAlignment="Top"
+    VerticalContentAlignment="Center"
+    Height="25"
+    Width="170"
+    Margin="150,400,0,0"
+    SelectedItem="{Binding SelectedItem}">
+    <ComboBoxItem Content="ぶどう" />
+    <ComboBoxItem Content="りんご" />
+    <ComboBoxItem Content="みかん" />
+    <ComboBoxItem Content="もも" />
+    <i:Interaction.Triggers>
+        <i:EventTrigger EventName="SelectionChanged">
+            <i:InvokeCommandAction Command="{Binding SelectionChangedCommand}" />
+        </i:EventTrigger>
+    </i:Interaction.Triggers>
+</ComboBox>
+```
