@@ -17,15 +17,25 @@ WPFとPrism、Behaviorsに関して
 
 ## 組み込みViewについて
 
-### レイアウト用
+### レイアウト用（Panel）
+
+[参照](https://learn.microsoft.com/ja-jp/dotnet/desktop/wpf/controls/panels-overview?view=netframeworkdesktop-4.8)
 
 * Grid：子viewを格子配置
-* StackPanel：子viewを上から重ねていく配置
+* StackPanel：子viewを水平方向または垂直方向の単一行に配置
 * DockPanel：子viewを上下左右に配置
   * DockPanel.Dockで上下左右を指定積み重ねること可能
   ```
             <... DockPanel.Dock="Bottom">
   ```
+* ContentControl：任意の種類のコンテンツが 1 つあるコントロール
+* Canvas  Canvas 領域に対する座標により子要素を明示的に配置できる領域が定義されています。
+* UniformGrid	格子内の子viewをすべて同じセル サイズで整列する
+* WrapPanel	左から右へ順に子viewが配置され、外側のボックスの端で改行して次の行へ。後続の配置は、Orientation プロパティの値に応じて、上から下または右から左に向かう。
+* TabPanel	TabControl でのタブ ボタンのレイアウトが処理されます。
+* ToolBarOverflowPanel	ToolBar コントロール内のコンテンツが整列されます。
+* VirtualizingPanel	大量の子viewを表示している部分だけ実体化することで、利用効率、表示効率を上げる。ListViewの派生元？
+* VirtualizingStackPanel	水平方向または垂直方向の単一行でコンテンツを整列し、仮想化。DataGridの派生元？
 
 ### 基本部品
 
@@ -51,6 +61,26 @@ WPFとPrism、Behaviorsに関して
 ```
 の省略
 
+* 画面切り替え
+  * IRegionManagerで切り替える
+  ```
+    regionManager.RequestNavigate(REGION_NAME, nameof(XView));
+  ```
+  * IRegionManagerはコンストラクタで受け取る
+  ```
+          public MainWindowViewModel(IRegionManager regionManager)
+            : this()
+        {
+            this.regionManager = regionManager;
+
+  ```
+  * IModuleCatalogへの登録が必要
+  ```
+        protected override void RegisterTypes(IContainerRegistry containerRegistry)
+        {
+            containerRegistry.RegisterForNavigation<XView>();
+  ```
+  
 ## Behaviorsのお約束
 
 > [参照](https://zenn.dev/takuty/articles/e9d8f065452266)
