@@ -17,7 +17,7 @@ WPFとPrism、Behaviorsに関して
 
 ## 組み込みViewについて
 
-### レイアウト用（Panel）
+### コンテナ（Panel）
 
 [参照](https://learn.microsoft.com/ja-jp/dotnet/desktop/wpf/controls/panels-overview?view=netframeworkdesktop-4.8)
 
@@ -37,20 +37,144 @@ WPFとPrism、Behaviorsに関して
 * VirtualizingPanel	大量の子viewを表示している部分だけ実体化することで、利用効率、表示効率を上げる。ListViewの派生元？
 * VirtualizingStackPanel	水平方向または垂直方向の単一行でコンテンツを整列し、仮想化。DataGridの派生元？
 
-### 基本部品
+### コントロール
 
 * TextBlock：テキスト表示用
+* DataGrid：テーブル表示
 * ListBox；リスト表示
   * ItemsSource：リスト内容
   * ListBox.ItemContainerStyle：全体のデザイン
   * ListBox.ItemTemplate：各項目のデザイン
     * DataTemplate：項目の内容部viewのテンプレート
-* Border：横線
 * RadioButton:複数のRadioButtonから1つを選択する
   * GroupName：RadioButtonをまとめる（この１グループから1つが選ばれる）
+* Calendar：カレンダー
 
+### シェイプ
 
-  
+* Border：横線
+* Rectangle：矩形
+* Ellipse：楕円
+
+### メディア
+
+* Image　画像
+* MediaElement　動画や音声を再生
+
+### ドキュメント
+
+*
+
+## XAMLのお約束
+
+[参照](https://atmarkit.itmedia.co.jp/ait/articles/1006/22/news101.html)
+
+Microsoftが提唱するCLR（Common Language Runtime）オブジェクトをXMLべースで記述する。
+CLRオブジェクトは、C#やVBでも記述できる。
+```
+namespace Sample
+{
+  public class Point
+  {
+    public int X { get; set; }
+    public int Y { get; set; }
+  }
+}
+
+var ... = new Sample.Point { X = 1, Y = 2 };
+```
+が
+```
+<Point X="1" Y="2"
+  xmlns="clr-namespace:Sample;assembly=..." />
+```
+
+プロパティの値に{x:Static } 記述を行うとMemberでstatic変数参照ができる。
+```
+"{x:Static Member=SystemColors.HighlightTextBrush}"
+```
+
+XAMLを使うか、コーディングするか、どちらでもよい。
+
+* Childrenプロパティが子要素を管理する（UIElementCollectionクラス）
+
+```
+public class MainWindow : Window
+{
+  public MainWindow()
+  {
+    this.Content =
+      new Grid
+      {
+        Children = {
+          new StackPanel {
+            Children = {
+              new Menu { Items =
+                { new MenuItem { Header = "メニュー" } } },
+              new Button { Content = "ボタン" },
+              new CheckBox { Content = "チェックボックス" },
+              new ComboBox { Items =
+                { "コンボボックス" }, SelectedIndex = 0 },
+              new RadioButton { Content = "ラジオボタン" },
+              new Slider(),
+              new ListBox { Items = {
+                  "リストボックス項目1",
+                  "リストボックス項目2",
+                }}}}}};
+  }
+```
+通常
+
+* XXX.xaml
+  *  XXX.xaml.cs
+
+のペアで画面を記述し、中間ファイル
+
+* XXX.baml
+* XXX.g.cs
+
+が作成され、そこからオブジェクトファイルとなる。
+
+```
+<Grid
+  xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+  xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+  x:Class="Sample.MyGrid">
+  <Button
+    x:Name="button1"
+    Content="ボタン"
+    Click="button1_Click" />
+</Grid>
+```
+x:Class属性やx:Name属性もその一種で、x:Class属性には分離コードで実装するクラス名を、x:Name属性にはフィールド名を指定する。
+↓
+```
+namespace Sample
+{
+  public partial class MyGrid : Grid
+  {
+    public MyGrid()
+    {
+      InitializeComponent();
+    }
+
+    void button1_Click(object sender, System.Windows.RoutedEventArgs e)
+    {
+      MessageBox.Show("ボタンが押されました");
+    }
+  }
+}
+```
+### プロパティ要素構文（property element syntax）
+```
+<Button Background="Blue" />
+```
+と文字列で指定できない属性はXML属性の代わりに、子要素としてプロパティ値を設定する
+```
+<Button>
+  <Button.Background>Blue</Button.Background >
+</Button>
+```
 ## Prismのお約束
 * Projectのフォルダ階層をView,ViewModelの識別に利用する
   * prism:ViewModelLocator.AutoWireViewModel="True"で自動化 
