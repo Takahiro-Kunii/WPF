@@ -175,6 +175,22 @@ namespace Sample
   <Button.Background>Blue</Button.Background >
 </Button>
 ```
+
+### マークアップ拡張（markup extension）
+これがデータバインディングの肝となる。
+XML属性中に { } で囲った記述を書くと、対応するマークアップ拡張クラスのインスタンス生成と、そのProvideValueメソッド呼び出しを通してプロパティの値が設定される。
+```
+  <TextBox Text="{Binding ElementName=slider, Path=Value}" />
+```
+が
+```
+var binding = new System.Windows.Data.Binding
+{
+  ElementName = "slider",
+  Path = new PropertyPath("Value"),
+};
+```
+となる。
 ## Prismのお約束
 * Projectのフォルダ階層をView,ViewModelの識別に利用する
   * prism:ViewModelLocator.AutoWireViewModel="True"で自動化 
